@@ -1,0 +1,5 @@
+forge-std/=lib/aave-helpers/lib/forge-std/src/
+aave-address-book/=lib/aave-helpers/lib/aave-address-book/src/
+aave-helpers/=lib/aave-helpers/src/
+solidity-utils/=lib/solidity-utils/src/
+openzeppelin-contracts/=lib/solidity-utils/lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/

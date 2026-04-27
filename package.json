@@ -1,0 +1,18 @@
+{
+  "name": "lend-migrator-rescue",
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "prettier '**/*.{md,sol,js,ts,json,yml,yaml}' --check",
+    "lint:fix": "prettier '**/*.{md,sol,js,ts,json,yml,yaml}' --write",
+    "lendToAaveMigrator:current": "cast source --chain mainnet -d etherscan \"$(jq -r '.lendToAaveMigrator.currentImplementation' utils/addresses.json)\"",
+    "lendToAaveMigrator:diff": "yarn lendToAaveMigrator:current && prettier --ignore-path .prettierignore --write ./etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol && sh utils/generateDiffs.sh ./etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol ./src/LendToAaveMigrator.sol LendToAaveMigrator",
+    "lendToAaveMigrator:layout": "make storage-diff"
+  },
+  "keywords": [],
+  "author": "Aave Labs",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.0.0",
+    "prettier-plugin-solidity": "2.1.0"
+  }
+}

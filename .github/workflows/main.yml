@@ -1,0 +1,16 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - feat/*
+  workflow_dispatch:
+
+jobs:
+  lint:
+    uses: bgd-labs/github-workflows/.github/workflows/foundry-lint-prettier.yml@main
+  test:
+    uses: bgd-labs/github-workflows/.github/workflows/foundry-test.yml@main
+    secrets: inherit

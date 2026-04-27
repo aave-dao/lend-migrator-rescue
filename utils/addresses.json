@@ -1,0 +1,6 @@
+{
+  "lendToAaveMigrator": {
+    "proxy": "0x317625234562B1526Ea2FaC4030Ea499C5291de4",
+    "currentImplementation": "0x7b62461a3570c6ac8a9f8330421576e417b71ee7"
+  }
+}

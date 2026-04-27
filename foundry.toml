@@ -1,0 +1,33 @@
+[profile.default]
+src = 'src'
+test = 'tests'
+out = 'out'
+script = 'scripts'
+libs = ['lib']
+ffi = true
+solc_version = '0.8.28'
+evm_version = 'cancun'
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = 'none'
+verbosity = 3
+use_literal_content = true
+
+[profile.default.fuzz]
+runs = 9999
+
+[profile.pr.fuzz]
+runs = 10000
+
+[profile.ci.fuzz]
+runs = 10000
+
+[lint]
+ignore = ["src/dependencies/**/*", "tests/**/*"]
+lint_on_build = false
+
+[rpc_endpoints]
+mainnet = '${RPC_MAINNET}'
+
+[etherscan]
+mainnet = { key = '${ETHERSCAN_API_KEY}', chainId = 1 }
