@@ -7,9 +7,7 @@ import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 import {AaveV2EthereumAssets} from 'aave-address-book/AaveV2Ethereum.sol';
 import {MiscEthereum} from 'aave-address-book/MiscEthereum.sol';
 
-import {
-  IInitializableAdminUpgradeabilityProxy
-} from 'src/interfaces/IInitializableAdminUpgradeabilityProxy.sol';
+import {IInitializableAdminUpgradeabilityProxy} from 'src/interfaces/IInitializableAdminUpgradeabilityProxy.sol';
 import {LendToAaveMigrator} from 'src/LendToAaveMigrator.sol';
 
 contract LendToAaveMigratorTest is Test {

@@ -5,13 +5,13 @@ index 59db969..067a4e7 100644
 @@ -1,8 +1,9 @@
  // SPDX-License-Identifier: agpl-3.0
  pragma solidity ^0.8.0;
- 
+
 -import {IERC20} from 'solidity-utils/contracts/oz-common/interfaces/IERC20.sol';
 -import {VersionedInitializable} from './dependencies/upgradeability/VersionedInitializable.sol';
 +import {IERC20} from 'openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
 +import {SafeERC20} from 'openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol';
 +import {VersionedInitializable} from 'src/dependencies/VersionedInitializable.sol';
- 
+
  /**
   * @title LendToAaveMigrator
 @@ -10,10 +11,12 @@ import {VersionedInitializable} from './dependencies/upgradeability/VersionedIni
@@ -25,13 +25,13 @@ index 59db969..067a4e7 100644
    uint256 public immutable LEND_AAVE_RATIO;
 -  uint256 public constant REVISION = 2;
 +  uint256 public constant REVISION = 3;
- 
+
    uint256 public _totalLendMigrated;
- 
+
 @@ -32,12 +35,22 @@ contract LendToAaveMigrator is VersionedInitializable {
     */
    event AaveTokensRescued(address from, address indexed to, uint256 amount);
- 
+
 +  /**
 +   * @dev thrown when the migration is closed
 +   */
@@ -54,7 +54,7 @@ index 59db969..067a4e7 100644
      LEND_AAVE_RATIO = lendAaveRatio;
 @@ -46,68 +59,32 @@ contract LendToAaveMigrator is VersionedInitializable {
    }
- 
+
    /**
 -   * @dev initializes the implementation and rescues the LEND sent to the contract
 -   * by migrating them to AAVE and sending them to the AaveMerkleDistributor
@@ -102,7 +102,7 @@ index 59db969..067a4e7 100644
 +
 +    emit AaveTokensRescued(address(this), recipient, currentBalance);
    }
- 
+
    /**
     * @dev returns true if the migration started
     */
@@ -111,7 +111,7 @@ index 59db969..067a4e7 100644
 +  function migrationStarted() external pure returns (bool) {
 +    return false;
    }
- 
+
    /**
     * @dev executes the migration from LEND to AAVE. Users need to give allowance to this contract to transfer LEND before executing
     * this transaction.
@@ -132,5 +132,6 @@ index 59db969..067a4e7 100644
 +    amount;
 +    revert MigrationClosed();
    }
- 
+
    /**
+```
