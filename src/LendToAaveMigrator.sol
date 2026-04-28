@@ -16,6 +16,7 @@ contract LendToAaveMigrator is VersionedInitializable {
   IERC20 public immutable AAVE;
   IERC20 public immutable LEND;
   uint256 public immutable LEND_AAVE_RATIO;
+  address public immutable COLLECTOR;
   uint256 public constant REVISION = 3;
 
   uint256 public _totalLendMigrated;
@@ -43,38 +44,51 @@ contract LendToAaveMigrator is VersionedInitializable {
   /**
    * @dev thrown when the specified recipient is invalid
    */
-  error InvalidRecipient();
+  error ZeroAddress();
 
   /**
    * @param aave the address of the AAVE token
    * @param lend the address of the LEND token
    * @param lendAaveRatio the exchange rate between LEND and AAVE
+   $ @param collector the address of the collector contract
    */
-  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio) {
+  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio, address collector) {
+    require(
+      address(aave) != address(0) && address(lend) != address(0) && collector != address(0),
+      ZeroAddress()
+    );
+
     AAVE = aave;
     LEND = lend;
     LEND_AAVE_RATIO = lendAaveRatio;
+    COLLECTOR = collector;
 
+    // disableInitializers on implementation
     lastInitializedRevision = REVISION;
   }
 
   /**
-   * @dev recovers all the AAVE in this contract and send it to the given address.
+   * @dev recovers all the AAVE in this contract and send it to the Collector address
    */
-  function initialize(address recipient) public initializer {
-    require(recipient != address(0), InvalidRecipient());
-
+  function initialize() public initializer {
     uint256 currentBalance = AAVE.balanceOf(address(this));
-    AAVE.safeTransfer(recipient, currentBalance);
+    AAVE.safeTransfer(COLLECTOR, currentBalance);
 
-    emit AaveTokensRescued(address(this), recipient, currentBalance);
+    emit AaveTokensRescued(address(this), COLLECTOR, currentBalance);
   }
 
   /**
    * @dev returns true if the migration started
    */
-  function migrationStarted() external pure returns (bool) {
-    return false;
+  function migrationStarted() external view returns (bool) {
+    return lastInitializedRevision != 0;
+  }
+
+  /**
+   * @dev returns true if the migration ended
+   */
+  function migrationEnded() external pure returns (bool) {
+    return true;
   }
 
   /**
@@ -82,8 +96,7 @@ contract LendToAaveMigrator is VersionedInitializable {
    * this transaction.
    * burns the migrated LEND amount
    */
-  function migrateFromLEND(uint256 amount) external pure {
-    amount;
+  function migrateFromLEND(uint256) external pure {
     revert MigrationClosed();
   }
 

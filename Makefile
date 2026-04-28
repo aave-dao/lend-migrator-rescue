@@ -20,3 +20,4 @@ storage-diff :
 	FOUNDRY_SRC=etherscan/LendToAaveMigrator forge inspect etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol:LendToAaveMigrator storage-layout --md --remappings solidity-utils/=etherscan/LendToAaveMigrator/lib/solidity-utils/src/ > reports/LendToAaveMigrator_layout.md
 	forge inspect src/LendToAaveMigrator.sol:LendToAaveMigrator storage-layout --md > reports/rescue_LendToAaveMigrator_layout.md
 	make git-diff before=reports/LendToAaveMigrator_layout.md after=reports/rescue_LendToAaveMigrator_layout.md out=rescue_LendToAaveMigrator_layout_diff
+	make git-diff before=etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol after=src/LendToAaveMigrator.sol out=LendToAaveMigrator-diff

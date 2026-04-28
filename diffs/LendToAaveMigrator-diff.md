@@ -1,7 +1,8 @@
-```diff --git a/./etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol b/./src/LendToAaveMigrator.sol
-index 59db969..067a4e7 100644
---- a/./etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol
-+++ b/./src/LendToAaveMigrator.sol
+```diff
+diff --git a/etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol b/src/LendToAaveMigrator.sol
+index 59db969..3b14dc1 100644
+--- a/etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol
++++ b/src/LendToAaveMigrator.sol
 @@ -1,8 +1,9 @@
  // SPDX-License-Identifier: agpl-3.0
  pragma solidity ^0.8.0;
@@ -14,7 +15,7 @@ index 59db969..067a4e7 100644
 
  /**
   * @title LendToAaveMigrator
-@@ -10,10 +11,12 @@ import {VersionedInitializable} from './dependencies/upgradeability/VersionedIni
+@@ -10,10 +11,13 @@ import {VersionedInitializable} from './dependencies/upgradeability/VersionedIni
   * @author Aave
   */
  contract LendToAaveMigrator is VersionedInitializable {
@@ -24,11 +25,12 @@ index 59db969..067a4e7 100644
    IERC20 public immutable LEND;
    uint256 public immutable LEND_AAVE_RATIO;
 -  uint256 public constant REVISION = 2;
++  address public immutable COLLECTOR;
 +  uint256 public constant REVISION = 3;
 
    uint256 public _totalLendMigrated;
 
-@@ -32,12 +35,22 @@ contract LendToAaveMigrator is VersionedInitializable {
+@@ -32,57 +36,45 @@ contract LendToAaveMigrator is VersionedInitializable {
     */
    event AaveTokensRescued(address from, address indexed to, uint256 amount);
 
@@ -40,19 +42,28 @@ index 59db969..067a4e7 100644
 +  /**
 +   * @dev thrown when the specified recipient is invalid
 +   */
-+  error InvalidRecipient();
++  error ZeroAddress();
 +
    /**
     * @param aave the address of the AAVE token
     * @param lend the address of the LEND token
     * @param lendAaveRatio the exchange rate between LEND and AAVE
++   $ @param collector the address of the collector contract
     */
 -  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio) public {
-+  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio) {
++  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio, address collector) {
++    require(
++      address(aave) != address(0) && address(lend) != address(0) && collector != address(0),
++      ZeroAddress()
++    );
++
      AAVE = aave;
      LEND = lend;
      LEND_AAVE_RATIO = lendAaveRatio;
-@@ -46,68 +59,32 @@ contract LendToAaveMigrator is VersionedInitializable {
++    COLLECTOR = collector;
+
++    // disableInitializers on implementation
+     lastInitializedRevision = REVISION;
    }
 
    /**
@@ -63,7 +74,7 @@ index 59db969..067a4e7 100644
 -   * @param lendToMigratorAmount amount of lend sent to migrator that need to be rescued
 -   * @param lendToLendAmount amount of lend sent to LEND that need to be rescued
 -   * @param lendToAaveAmount amount of lend sent to AAVE that need to be rescued
-+   * @dev recovers all the AAVE in this contract and send it to the given address.
++   * @dev recovers all the AAVE in this contract and send it to the Collector address
     */
 -  function initialize(
 -    address aaveMerkleDistributor,
@@ -73,7 +84,10 @@ index 59db969..067a4e7 100644
 -  ) public initializer {
 -    uint256 lendAmount = lendToMigratorAmount + lendToLendAmount + lendToAaveAmount;
 -    uint256 migratorLendBalance = _totalLendMigrated + lendToMigratorAmount;
--
++  function initialize() public initializer {
++    uint256 currentBalance = AAVE.balanceOf(address(this));
++    AAVE.safeTransfer(COLLECTOR, currentBalance);
+
 -    // account for the LEND sent to the contract for the total migration
 -    _totalLendMigrated += lendAmount;
 -
@@ -94,24 +108,21 @@ index 59db969..067a4e7 100644
 -        AAVE.balanceOf(address(this)),
 -      'INCORRECT_BALANCE_RESCUED'
 -    );
-+  function initialize(address recipient) public initializer {
-+    require(recipient != address(0), InvalidRecipient());
-+
-+    uint256 currentBalance = AAVE.balanceOf(address(this));
-+    AAVE.safeTransfer(recipient, currentBalance);
-+
-+    emit AaveTokensRescued(address(this), recipient, currentBalance);
++    emit AaveTokensRescued(address(this), COLLECTOR, currentBalance);
    }
 
    /**
-    * @dev returns true if the migration started
-    */
--  function migrationStarted() external view returns (bool) {
--    return lastInitializedRevision != 0;
-+  function migrationStarted() external pure returns (bool) {
-+    return false;
+@@ -92,22 +84,20 @@ contract LendToAaveMigrator is VersionedInitializable {
+     return lastInitializedRevision != 0;
    }
 
++  /**
++   * @dev returns true if the migration ended
++   */
++  function migrationEnded() external pure returns (bool) {
++    return true;
++  }
++
    /**
     * @dev executes the migration from LEND to AAVE. Users need to give allowance to this contract to transfer LEND before executing
     * this transaction.
@@ -128,8 +139,7 @@ index 59db969..067a4e7 100644
 -    LEND.transfer(address(LEND), amount);
 -
 -    emit LendMigrated(msg.sender, amount);
-+  function migrateFromLEND(uint256 amount) external pure {
-+    amount;
++  function migrateFromLEND(uint256) external pure {
 +    revert MigrationClosed();
    }
 
