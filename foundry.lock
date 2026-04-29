@@ -1,0 +1,26 @@
+{
+  "lib/aave-address-book": {
+    "tag": {
+      "name": "v4.49.7",
+      "rev": "b82a80f47a135df5b5c92a76e0f2e727c87b9ec7"
+    }
+  },
+  "lib/aave-helpers": {
+    "tag": {
+      "name": "v3.1.0",
+      "rev": "e0ad471e9da2b45468b0f3e0adac7d3c257940dc"
+    }
+  },
+  "lib/forge-std": {
+    "tag": {
+      "name": "v1.16.0",
+      "rev": "8987040ede9553cea20c95ad40d0455930f9c8e0"
+    }
+  },
+  "lib/solidity-utils": {
+    "tag": {
+      "name": "v1.1.2",
+      "rev": "d19a9d0f0fa7271480cfac077e6b79a3d80d7d1f"
+    }
+  }
+}

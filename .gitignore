@@ -1,0 +1,29 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+broadcast/
+
+# Etherscan source dumps from `cast etherscan-source`
+etherscan/
+
+report/
+
+# Dotenv file
+.env
+
+# editors
+.idea
+.vscode
+lcov*
+
+# we use yarn as package manager
+package-lock.json
+node_modules
+
+# Others
+.DS_Store
+coverage*
+.venv
+.claude
