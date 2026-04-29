@@ -21,3 +21,8 @@ storage-diff :
 	forge inspect src/LendToAaveMigrator.sol:LendToAaveMigrator storage-layout --md > reports/rescue_LendToAaveMigrator_layout.md
 	make git-diff before=reports/LendToAaveMigrator_layout.md after=reports/rescue_LendToAaveMigrator_layout.md out=rescue_LendToAaveMigrator_layout_diff
 	make git-diff before=etherscan/LendToAaveMigrator/src/contracts/LendToAaveMigrator.sol after=src/LendToAaveMigrator.sol out=LendToAaveMigrator-diff
+
+deploy :
+	forge script DeployLendToAaveMigrator \
+		--rpc-url ${CHAIN} --account ${ACCOUNT} --sender ${SENDER} \
+		--chain ${CHAIN}
