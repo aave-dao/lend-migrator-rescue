@@ -10,7 +10,7 @@ import {IProxyAdminOzV4} from 'solidity-utils/contracts/transparent-proxy/interf
  * @author Aave
  * @notice Aave Governance V3 payload that upgrades the LendToAaveMigrator proxy
  * to a new implementation and atomically calls `initialize()` on it, sweeping
- * the migrator's AAVE balance to the Aave Collector and permanently closing
+ * the migrator's AAVE balance to the Aave Ecosystem Reserve and permanently closing
  * the LEND -> AAVE migration.
  */
 contract ProposalPayload is IProposalGenericExecutor {

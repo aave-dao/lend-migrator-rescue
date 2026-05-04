@@ -16,7 +16,7 @@ contract LendToAaveMigrator is VersionedInitializable {
   IERC20 public immutable AAVE;
   IERC20 public immutable LEND;
   uint256 public immutable LEND_AAVE_RATIO;
-  address public immutable COLLECTOR;
+  address public immutable ECOSYSTEM_RESERVE;
   uint256 public constant REVISION = 3;
 
   uint256 public _totalLendMigrated;
@@ -50,31 +50,31 @@ contract LendToAaveMigrator is VersionedInitializable {
    * @param aave the address of the AAVE token
    * @param lend the address of the LEND token
    * @param lendAaveRatio the exchange rate between LEND and AAVE
-   $ @param collector the address of the collector contract
+   * @param ecosystemReserve the address of the Ecosystem Reserve
    */
-  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio, address collector) {
+  constructor(IERC20 aave, IERC20 lend, uint256 lendAaveRatio, address ecosystemReserve) {
     require(
-      address(aave) != address(0) && address(lend) != address(0) && collector != address(0),
+      address(aave) != address(0) && address(lend) != address(0) && ecosystemReserve != address(0),
       ZeroAddress()
     );
 
     AAVE = aave;
     LEND = lend;
     LEND_AAVE_RATIO = lendAaveRatio;
-    COLLECTOR = collector;
+    ECOSYSTEM_RESERVE = ecosystemReserve;
 
     // disableInitializers on implementation
     lastInitializedRevision = REVISION;
   }
 
   /**
-   * @dev recovers all the AAVE in this contract and send it to the Collector address
+   * @dev recovers all the AAVE in this contract and send it to the ECOSYSTEM_RESERVE address
    */
   function initialize() public initializer {
     uint256 currentBalance = AAVE.balanceOf(address(this));
-    AAVE.safeTransfer(COLLECTOR, currentBalance);
+    AAVE.safeTransfer(ECOSYSTEM_RESERVE, currentBalance);
 
-    emit AaveTokensRescued(address(this), COLLECTOR, currentBalance);
+    emit AaveTokensRescued(address(this), ECOSYSTEM_RESERVE, currentBalance);
   }
 
   /**
@@ -94,7 +94,7 @@ contract LendToAaveMigrator is VersionedInitializable {
   /**
    * @dev executes the migration from LEND to AAVE. Users need to give allowance to this contract to transfer LEND before executing
    * this transaction.
-   * burns the migrated LEND amount
+   * Migration is closed, this function will revert if called.
    */
   function migrateFromLEND(uint256) external pure {
     revert MigrationClosed();
